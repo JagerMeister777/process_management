@@ -7,7 +7,7 @@
 <body>
 <h2>ユーザー登録</h2>
 
-  <form th:action="@{/user/resist}" th:object="${resistForm}" method="post">
+  <form th:action="@{/user/signup}" th:object="${signupForm}" method="post">
     <div>
       <label>ログインID</label>
       <input type="text" th:field="*{loginId}">
@@ -27,6 +27,6 @@
       <input type="submit" value="サインアップ">
     </div>
   </form>
-<a href="/">ログイン</a>
+<a th:href="@{/login}">ログイン</a>
 </body>
 </html>

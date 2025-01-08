@@ -2,12 +2,15 @@ package com.example.process.management.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import com.example.process.management.entity.User;
+import com.example.process.management.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,38 +20,31 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * Spring Securityの設定クラス。
  */
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
+//  TODO 正しいセキュリティ設定の構築を行う。
   @Bean
-  public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
-
-    //H2コンソールを認証不要にする
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .authorizeHttpRequests(
-        auth -> auth
-            .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**"))
-            .permitAll());
-
-    //H2コンソールのCSRFの無効化
-    http
-        .csrf(
-        csrf -> csrf
-            .ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")));
-
-    //セキュリティーヘッダー（これがないとH2コンソールを表示できない）
-    http
-        .headers(headers -> headers
-        .frameOptions(frame -> frame.sameOrigin()));
-
-    //セキュリティー設定
-    http
-        .securityMatcher("/**")  // すべてのリクエストに適用
-        .formLogin(Customizer.withDefaults())  // フォームログインをデフォルト設定で有効化
-        .csrf(Customizer.withDefaults())  // CSRF保護をデフォルト設定で有効化
-        .headers(Customizer.withDefaults())  // ヘッダー設定をデフォルト設定で有効化
-        .authorizeHttpRequests(authz -> authz.anyRequest().authenticated());  // すべてのリクエストに認証を要求
+        // H2コンソールの設定
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/**").permitAll()
+            .anyRequest().authenticated())
+        .csrf(csrf -> csrf
+            .ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")))
+        .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
     return http.build();
   }
+
+  /**
+   * パスワードエンコーダーを定義します。
+   *
+   * @return PasswordEncoder
+   */
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
+
 }
