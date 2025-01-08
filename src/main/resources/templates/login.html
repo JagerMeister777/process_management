@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>ログイン</title>
+</head>
+<body>
+<h2>ログイン</h2>
+<form th:action="@{/login}" th:object="${loginForm}" method="post">
+  <div>
+    <label>ログインID</label>
+    <input type="text" th:field="*{loginId}">
+  </div>
+  <div>
+    <label>パスワード</label>
+    <input type="password" th:field="*{password}">
+  </div>
+  <div>
+    <input type="submit" value="ログイン">
+  </div>
+</form>
+<a href="/user/resist">ユーザー登録はこちら</a>
+</body>
+</html>

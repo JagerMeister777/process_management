@@ -1,0 +1,4 @@
+2025-01-08 11:48:29.807774+09:00 jdbc[14]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: SQLステートメントに文法エラーがあります "SELECT * FROM USERS TASKS [*]PROJECT_USERS"
+Syntax error in SQL statement "SELECT * FROM USERS TASKS [*]PROJECT_USERS"; SQL statement:
+SELECT * FROM USERS TASKS PROJECT_USERS [42000-232]
