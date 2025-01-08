@@ -1,10 +1,16 @@
 package com.example.process.management.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+/**
+ * ユーザー情報
+ */
 
 @Entity
 @Data
@@ -18,39 +24,53 @@ public class User {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  /** ログインID */
   @Column(nullable = false, unique = true)
-  private String username;
+  @NotBlank
+  private String loginId;
 
+  /** パスワード */
   @Column(nullable = false)
+  @NotBlank
   private String password;
 
+  /** メールアドレス */
   @Column(nullable = true)
+  @NotBlank
   private String email;
 
+  /** SSO認証ID */
   @Column(name = "sso_id", unique = true)
   private String ssoId;
 
+  /** 役職・権限 */
   @Column(nullable = false)
   private String role;
 
+  /** ユーザーが作成したプロジェクト */
   @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Project> createdProjects;
 
+  /** ユーザーが関与しているプロジェクト */
   @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
   private List<Project> projects;
 
+  /** ユーザー作成日 */
   @Column(name = "created_at", updatable = false)
   private LocalDateTime createdAt;
 
+  /** ユーザー情報更新日 */
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
+  /** 自動で作成日と更新日を入力する */
   @PrePersist
   public void prePersist() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();
   }
 
+  /** 自動で作成日と更新日を入力する */
   @PreUpdate
   public void preUpdate() {
     this.updatedAt = LocalDateTime.now();
