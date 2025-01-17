@@ -35,7 +35,7 @@ public class UserController {
    */
   @GetMapping("/login")
   public String loginView(LoginForm form) {
-    return "login";
+    return "users/login";
   }
 
 
@@ -56,8 +56,9 @@ public class UserController {
 
       if(!isPasswordMatching) {
         model.addAttribute("errorMsg","ログインIDとパスワードの組み合わせが間違っています。");
-        return "login";
+        return "users/login";
       }else{
+        service.userEnabledTrue(userInfo.get());
         return "redirect:/home";
       }
   }
@@ -69,7 +70,7 @@ public class UserController {
    */
   @GetMapping("/user/signup")
   public String signupView(SignupForm form) {
-    return "signup";
+    return "users/signup";
   }
 
   /**
@@ -81,12 +82,12 @@ public class UserController {
   @PostMapping("/user/signup")
   public String signup(@Valid @ModelAttribute("signupForm") User user, BindingResult result) {
     if (result.hasErrors()){
-      return "signup";
+      return "users/signup";
     }else{
       var encodedPassword = passwordEncoder.encode(user.getPassword());
       user.setPassword(encodedPassword);
       service.resistUser(user);
-      return "redirect:/home";
+      return "redirect:/login";
     }
   }
 }

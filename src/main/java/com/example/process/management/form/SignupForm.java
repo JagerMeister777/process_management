@@ -1,5 +1,6 @@
 package com.example.process.management.form;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
