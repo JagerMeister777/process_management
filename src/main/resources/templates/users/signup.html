@@ -11,18 +11,18 @@
     <div>
       <label>ログインID</label>
       <input type="text" th:field="*{loginId}">
+      <span th:if="${#fields.hasErrors('loginId')}" th:errors="*{loginId}" style="color: red"></span>
     </div>
     <div>
       <label>パスワード</label>
       <input type="password" th:field="*{password}">
+      <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: red"></span>
     </div>
     <div>
       <label>メールアドレス</label>
       <input type="email" th:field="*{email}">
+      <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color: red"></span>
     </div>
-    <span th:if="${#fields.hasErrors('loginId')}" th:errors="*{loginId}" style="color: red"></span>
-    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: red"></span>
-    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color: red"></span>
     <div>
       <input type="submit" value="サインアップ">
     </div>

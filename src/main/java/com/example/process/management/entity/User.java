@@ -26,17 +26,17 @@ public class User {
 
   /** ログインID */
   @Column(nullable = false, unique = true)
-  @NotBlank
+  @NotBlank(message = "ログインIDを入力してください。")
   private String loginId;
 
   /** パスワード */
   @Column(nullable = false)
-  @NotBlank
+  @NotBlank(message = "パスワードを4桁以上で入力してください。")
   private String password;
 
   /** メールアドレス */
   @Column(nullable = true)
-  @NotBlank
+  @NotBlank(message = "メールアドレスを入力してください。")
   private String email;
 
   /** SSO認証ID */
@@ -46,6 +46,10 @@ public class User {
   /** 役職・権限 */
   @Column(nullable = false)
   private String role;
+
+  /** ユーザーの有効性 */
+  @Column(columnDefinition = "false")
+  private boolean enabled;
 
   /** ユーザーが作成したプロジェクト */
   @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
