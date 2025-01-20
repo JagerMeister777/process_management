@@ -23,6 +23,7 @@ public class ProjectService {
   public void createProject(Project project,User user){
     project.setCreatedBy(user);
     project.getUsers().add(user);
+    user.getProjects().add(project);
     projectRepository.save(project);
   }
 
