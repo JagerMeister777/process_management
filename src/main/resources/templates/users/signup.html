@@ -9,6 +9,11 @@
 
   <form th:action="@{/user/signup}" th:object="${signupForm}" method="post">
     <div>
+      <label>氏名</label>
+      <input type="text" th:field="*{name}">
+      <span th:if="${#fields.hasErrors('name')}" th:errors="*{naem}" style="color: red"></span>
+    </div>
+    <div>
       <label>ログインID</label>
       <input type="text" th:field="*{loginId}">
       <span th:if="${#fields.hasErrors('loginId')}" th:errors="*{loginId}" style="color: red"></span>

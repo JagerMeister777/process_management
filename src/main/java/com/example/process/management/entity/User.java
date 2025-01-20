@@ -16,13 +16,15 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table(name = "users")
 public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column()
+  private String name;
 
   /** ログインID */
   @Column(nullable = false, unique = true)
@@ -48,15 +50,14 @@ public class User {
   private String role;
 
   /** ユーザーの有効性 */
-  @Column(columnDefinition = "false")
-  private boolean enabled;
+  private boolean enabled = false;
 
   /** ユーザーが作成したプロジェクト */
-  @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
   private List<Project> createdProjects;
 
   /** ユーザーが関与しているプロジェクト */
-  @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+  @ManyToMany(mappedBy = "users")
   private List<Project> projects;
 
   /** ユーザー作成日 */
