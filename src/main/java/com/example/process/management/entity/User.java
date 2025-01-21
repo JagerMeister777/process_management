@@ -3,6 +3,7 @@ package com.example.process.management.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table(name = "users")
 public class User {
 
@@ -48,16 +48,11 @@ public class User {
   private String role;
 
   /** ユーザーの有効性 */
-  @Column(columnDefinition = "false")
-  private boolean enabled;
-
-  /** ユーザーが作成したプロジェクト */
-  @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private List<Project> createdProjects;
+  private boolean enabled = false;
 
   /** ユーザーが関与しているプロジェクト */
-  @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
-  private List<Project> projects;
+  @ManyToMany(mappedBy = "users")
+  private List<Project> projects = new ArrayList<>();
 
   /** ユーザー作成日 */
   @Column(name = "created_at", updatable = false)

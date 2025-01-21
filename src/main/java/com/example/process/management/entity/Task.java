@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table(name = "tasks")
 public class Task {
 
@@ -32,7 +31,7 @@ public class Task {
   @Column(name = "status", nullable = false)
   private String status;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne()
   @JoinColumn(name = "project_id", nullable = false)
   private Project project;
 

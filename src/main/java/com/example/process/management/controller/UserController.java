@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequiredArgsConstructor
 public class UserController {
 
-  /** ユーザー登録Service */
+  /** ユーザーを管理するService */
   private final UserService service;
 
   /** passwordEncoder */

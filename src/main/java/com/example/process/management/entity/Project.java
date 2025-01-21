@@ -1,6 +1,7 @@
 package com.example.process.management.entity;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,7 +11,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table(name = "projects")
 public class Project {
 
@@ -24,20 +24,23 @@ public class Project {
   @Column(nullable = true)
   private String description;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @Column(name = "start_project",nullable = false)
+  private LocalDateTime startProject;
+
+  @Column(name = "end_project", nullable = false)
+  private LocalDateTime endProject;
+
+  @ManyToOne
   @JoinColumn(name = "created_by", nullable = false)
   private User createdBy;
 
-  @ManyToMany(fetch = FetchType.LAZY)
+  @ManyToMany
   @JoinTable(
       name = "project_users",
       joinColumns = @JoinColumn(name = "project_id"),
       inverseJoinColumns = @JoinColumn(name = "user_id")
   )
-  private List<User> users;
-
-  @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private List<Task> tasks;
+  private List<User> users = new ArrayList<>();
 
   @Column(name = "created_at", updatable = false)
   private LocalDateTime createdAt;
