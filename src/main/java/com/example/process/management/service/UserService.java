@@ -1,7 +1,9 @@
 package com.example.process.management.service;
 
+import com.example.process.management.entity.Project;
 import com.example.process.management.entity.User;
 import com.example.process.management.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class UserService {
    */
   public void resistUser(User user){
     user.setRole("USER");
+    user.setEnabled(false);
     repository.save(user);
   }
 
@@ -29,6 +32,26 @@ public class UserService {
    */
   public Optional<User> findByLoginId(String loginId) {
     return repository.findByLoginId(loginId);
+  }
+
+  /**
+   * ユーザーのID検索
+   *
+   * @param id プライマリーキー
+   * @return ユーザー情報
+   */
+  public Optional<User> findById(Long id){
+    return repository.findById(id);
+  }
+
+  /**
+   * ユーザーが作成したプロジェクトの取得
+   * @param id ユーザーID
+   * @return ユーザーが作成したプロジェクトリスト
+   */
+  public List<Project> showProjectList(long id) {
+    User user = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("user not found"));
+    return user.getProjects();
   }
 
   /**

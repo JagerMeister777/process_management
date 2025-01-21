@@ -1,0 +1,4 @@
+2025-01-21 12:52:31.214229+09:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: SQLステートメントに文法エラーがあります "[*]SPROJECTS ELECT * FROM USERS"; 期待されるステートメント "SAVEPOINT, SCRIPT, SHUTDOWN"
+Syntax error in SQL statement "[*]SPROJECTS ELECT * FROM USERS"; expected "SAVEPOINT, SCRIPT, SHUTDOWN"; SQL statement:
+SPROJECTS ELECT * FROM USERS [42001-232]

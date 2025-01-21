@@ -2,30 +2,27 @@
 <html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
-  <title>新規プロジェクト作成</title>
+  <title>プロジェクト新規作成</title>
 </head>
 <body>
-<h2>新規プロジェクト作成</h2>
-<form th:action="@{/project/{id}/create(id=${id})}" method="post" th:object="${createProjectForm}">
+<h2>プロジェクト新規作成</h2>
+<span th:text="${errorMsg}" style="color: red"></span>
+<form th:action="@{/{id}/project/create(id=${id})}" th:object="${projectForm}" method="post">
   <div>
     <label for="name">プロジェクト名</label>
-    <input type="text" id="name" th:field="*{name}" required>
+    <input id="name" type="text" th:field="*{name}" required>
   </div>
   <div>
     <label for="description">説明</label>
-    <textarea id="description" th:field="*{description}" cols="30" rows="10"></textarea>
+    <textarea id="description" type="text" th:field="*{description}" required></textarea>
   </div>
   <div>
-    <label for="users">招待するユーザー</label>
+    <label for="startProject">着工日</label>
+    <input id="startProject" type="datetime-local" th:field="*{startProject}" required>
   </div>
   <div>
-    <select id="users" name="users" multiple required>
-      <option value="" disabled selected>選択してください</option>
-      <option th:each="user : ${userList}"
-              th:value="${user.id}"
-              th:text="${user.name}">
-      </option>
-    </select>
+    <label for="endProject">竣工日</label>
+    <input id="endProject" type="datetime-local" th:field="*{endProject}" required>
   </div>
   <input type="submit" value="作成">
 </form>

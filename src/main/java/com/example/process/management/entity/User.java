@@ -3,6 +3,7 @@ package com.example.process.management.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,9 +23,6 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
-  @Column()
-  private String name;
 
   /** ログインID */
   @Column(nullable = false, unique = true)
@@ -52,13 +50,9 @@ public class User {
   /** ユーザーの有効性 */
   private boolean enabled = false;
 
-  /** ユーザーが作成したプロジェクト */
-  @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
-  private List<Project> createdProjects;
-
   /** ユーザーが関与しているプロジェクト */
   @ManyToMany(mappedBy = "users")
-  private List<Project> projects;
+  private List<Project> projects = new ArrayList<>();
 
   /** ユーザー作成日 */
   @Column(name = "created_at", updatable = false)

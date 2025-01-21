@@ -1,7 +1,7 @@
 package com.example.process.management.entity;
 
 import jakarta.persistence.*;
-import java.util.Optional;
+import java.util.ArrayList;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,28 +18,44 @@ public class Project {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Version
-  private Long version = 0L;
-
   @Column(nullable = false)
   private String name;
 
   @Column(nullable = true)
   private String description;
 
-  @ManyToOne()
-  @JoinColumn(name = "created_by")
+  @Column(name = "start_project",nullable = false)
+  private LocalDateTime startProject;
+
+  @Column(name = "end_project", nullable = false)
+  private LocalDateTime endProject;
+
+  @ManyToOne
+  @JoinColumn(name = "created_by", nullable = false)
   private User createdBy;
 
-  @ManyToMany()
+  @ManyToMany
   @JoinTable(
       name = "project_users",
       joinColumns = @JoinColumn(name = "project_id"),
       inverseJoinColumns = @JoinColumn(name = "user_id")
   )
-  private List<User> users;
+  private List<User> users = new ArrayList<>();
 
-  @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-  private List<Task> tasks;
+  @Column(name = "created_at", updatable = false)
+  private LocalDateTime createdAt;
 
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
+
+  @PrePersist
+  public void prePersist() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  @PreUpdate
+  public void preUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
 }

@@ -2,53 +2,71 @@ package com.example.process.management.controller;
 
 import com.example.process.management.entity.Project;
 import com.example.process.management.entity.User;
-import com.example.process.management.form.CreateProjectForm;
-import com.example.process.management.repository.UserRepository;
+import com.example.process.management.form.ProjectForm;
 import com.example.process.management.service.ProjectService;
+import com.example.process.management.service.UserService;
+import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.Banner.Mode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/project")
 @RequiredArgsConstructor
 public class ProjectController {
 
+  /** プロジェクトを管理するService */
   private final ProjectService projectService;
 
-  private final UserRepository userRepository;
+  /** ユーザー情報のService */
+  private final UserService userService;
 
-  @GetMapping("/{id}/list")
-  public String projectList(@PathVariable Long id, Model model){
-    User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりませんんでした。　ID：" + id));
-    List<Project> hasUserProject = user.getProjects();
-    model.addAttribute("projectList",hasUserProject);
+  /**
+   * ユーザーの作成したプロジェクトリスト
+   * @param id ユーザーID
+   * @param model ユーザーが作成したプロジェクトリスト（List型）
+   * @return プロジェクトリスト画面
+   */
+  @GetMapping("/project/list")
+  public String getProjectList(Model model){
     return "projects/list";
   }
 
-  @GetMapping("/create")
-  public String createProject(Model model,CreateProjectForm form){
-    List<User> userList = userRepository.findAll();
-    model.addAttribute("userList",userList);
-    model.addAttribute("id",1);
+  /**
+   * プロジェクトの新規作成画面
+   * @param form 入力フォーム
+   * @return プロジェクトの作成画面
+   */
+  @GetMapping("/project/create")
+  public String createProjectView(ProjectForm form,Model model) {
+    // TODO 動的にユーザーIDを取得できるようにする
+    int userId = 1;
+    model.addAttribute("id",userId);
     return "projects/create";
   }
 
-  @PostMapping("/{id}/create")
-  public String createProject(@PathVariable Long id, @ModelAttribute Project project){
-    //ユーザーの検索
-    User createdByUser = userRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりませんでした。　ID：" + id));
+  @PostMapping("/{id}/project/create")
+  public String createProject(
+      @Valid @ModelAttribute("projectForm") ProjectForm form,
+      @PathVariable("id") Long userId,
+      Model model,
+      BindingResult result) {
+    Project project = new Project();
+    project.setName(form.getName());
+    project.setDescription(form.getDescription());
+    project.setStartProject(form.getStartProject());
+    project.setEndProject(form.getEndProject());
 
-    projectService.createProject(project,createdByUser);
+    //ユーザー情報を取得
+    User userInfo = userService.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
+
+    projectService.createProject(project,userInfo);
     return "redirect:/project/list";
   }
-
 }
