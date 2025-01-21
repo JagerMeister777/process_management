@@ -5,7 +5,6 @@ import com.example.process.management.form.LoginForm;
 import com.example.process.management.form.SignupForm;
 import com.example.process.management.service.UserService;
 import jakarta.validation.Valid;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -20,48 +19,13 @@ import org.springframework.web.bind.annotation.PostMapping;
  */
 @Controller
 @RequiredArgsConstructor
-public class UserController {
+public class SignUpController {
 
   /** ユーザーを管理するService */
   private final UserService service;
 
   /** passwordEncoder */
   private final PasswordEncoder passwordEncoder;
-
-  /**
-   * ログイン画面の表示
-   * @param form ログインフォーム
-   * @return ログイン画面
-   */
-  @GetMapping("/login")
-  public String loginView(LoginForm form) {
-    return "users/login";
-  }
-
-
-  /**
-   * ログイン処理
-   * @param form 入力された情報
-   * @param model エラーメッセージ
-   * @return 認証成功でホーム画面に繊維
-   */
-  @PostMapping("/login")
-  public String login(@Valid @ModelAttribute("loginForm") LoginForm form, Model model) {
-      //ユーザー情報を取得
-      var userInfo = service.findByLoginId(form.getLoginId());
-
-      //値があり、パスワードが一致するか
-      var isPasswordMatching = userInfo.isPresent() &&
-          passwordEncoder.matches(form.getPassword(),userInfo.get().getPassword());
-
-      if(!isPasswordMatching) {
-        model.addAttribute("errorMsg","ログインIDとパスワードの組み合わせが間違っています。");
-        return "users/login";
-      }else{
-        service.userEnabledTrue(userInfo.get());
-        return "redirect:/home";
-      }
-  }
 
   /**
    * ユーザー新規登録画面
