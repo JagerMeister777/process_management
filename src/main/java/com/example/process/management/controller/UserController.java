@@ -52,9 +52,12 @@ public class UserController {
     // 変更を申請しているユーザーIDで検索
     User user = service.findById(id).orElseThrow(() -> new IllegalArgumentException("user not found"));
 
+    // 入力されたログインIDが存在するか
+    Optional<User> existUser = service.findByLoginId(form.getLoginId());
+
     // 入力されたログインIDが使用できるか
     boolean isDuplicateLoginId = !user.getLoginId().equals(form.getLoginId())
-        && user.getId().equals(id);
+        && user.getId().equals(existUser.get().getId());
 
     //登録用パスワードと確認用パスワードが一致しているか
     boolean confirmPassword = !form.getPassword().isBlank()
