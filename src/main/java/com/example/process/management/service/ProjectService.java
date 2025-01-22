@@ -24,7 +24,6 @@ public class ProjectService {
    * プロジェクトの新規作成
    * @param project フォームから受け取ったプロジェクト情報
    */
-  //TODO これ以降の処理の修正（競合が発生する）projectIdの自動採番をどうにかする
   @Transactional
   public void createProject(Project project, User user) {
     // projectにuserを設定（プロジェクトを作成したユーザーを設定）

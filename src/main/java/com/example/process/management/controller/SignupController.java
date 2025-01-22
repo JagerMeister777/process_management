@@ -1,14 +1,12 @@
 package com.example.process.management.controller;
 
 import com.example.process.management.entity.User;
-import com.example.process.management.form.LoginForm;
 import com.example.process.management.form.SignupForm;
 import com.example.process.management.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
  */
 @Controller
 @RequiredArgsConstructor
-public class SignUpController {
+public class SignupController {
 
   /** ユーザーを管理するService */
   private final UserService service;

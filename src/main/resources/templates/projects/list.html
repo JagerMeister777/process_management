@@ -18,7 +18,7 @@
   <tr th:each="project : ${projectList}">
     <td th:text="${project.name}"></td>
     <td th:text="${project.description}"></td>
-    <td><a th:href="@{/project/{id}(id=${project.id})}"><icon>〇</icon></a></td>
+    <td><a th:href="@{/project/{id}(id=${project.id})}"><icon>■</icon></a></td>
   </tr>
   </tbody>
 </table>

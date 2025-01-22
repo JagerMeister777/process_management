@@ -33,8 +33,9 @@ public class ProjectController {
    * @param model ユーザーが作成したプロジェクトリスト（List型）
    * @return プロジェクトリスト画面
    */
-  @GetMapping("/project/list")
-  public String getProjectList(Model model){
+  @GetMapping("/project/list/{id}")
+  public String getProjectList(@PathVariable Long id, Model model){
+    model.addAttribute("projectList",userService.showProjectList(id));
     return "projects/list";
   }
 

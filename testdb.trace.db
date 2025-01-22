@@ -2,3 +2,17 @@
 org.h2.jdbc.JdbcSQLSyntaxErrorException: SQLステートメントに文法エラーがあります "[*]SPROJECTS ELECT * FROM USERS"; 期待されるステートメント "SAVEPOINT, SCRIPT, SHUTDOWN"
 Syntax error in SQL statement "[*]SPROJECTS ELECT * FROM USERS"; expected "SAVEPOINT, SCRIPT, SHUTDOWN"; SQL statement:
 SPROJECTS ELECT * FROM USERS [42001-232]
+2025-01-22 15:00:48.322566+09:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: SQLステートメントに文法エラーがあります "ALTER TABLE [*]user\000d\000aADD name VARCHAR(255)"; 期待されるステートメント "identifier"
+Syntax error in SQL statement "ALTER TABLE [*]user\000d\000aADD name VARCHAR(255)"; expected "identifier"; SQL statement:
+ALTER TABLE user
+ADD name VARCHAR(255) [42001-232]
+2025-01-22 15:00:54.589120+09:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: SQLステートメントに文法エラーがあります "ALTER TABLE [*]user ADD name VARCHAR(255)"; 期待されるステートメント "identifier"
+Syntax error in SQL statement "ALTER TABLE [*]user ADD name VARCHAR(255)"; expected "identifier"; SQL statement:
+ALTER TABLE user ADD name VARCHAR(255) [42001-232]
+2025-01-22 15:02:54.686355+09:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: SQLステートメントに文法エラーがあります "ALTER TABLE users\000d\000aADD name VARCHAR(60) [*]USERS"
+Syntax error in SQL statement "ALTER TABLE users\000d\000aADD name VARCHAR(60) [*]USERS"; SQL statement:
+ALTER TABLE users
+ADD name VARCHAR(60) USERS [42000-232]

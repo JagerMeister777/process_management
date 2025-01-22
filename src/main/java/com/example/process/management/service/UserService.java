@@ -16,16 +16,6 @@ public class UserService {
   private final UserRepository repository;
 
   /**
-   * ユーザーの登録処理
-   * @param user 登録するユーザー情報
-   */
-  public void resistUser(User user){
-    user.setRole("USER");
-    user.setEnabled(false);
-    repository.save(user);
-  }
-
-  /**
    * ユーザー情報の検索
    * @param loginId ログインID
    * @return DBに登録されているユーザー情報（なければNullを返す）
@@ -44,6 +34,7 @@ public class UserService {
     return repository.findById(id);
   }
 
+
   /**
    * ユーザーが作成したプロジェクトの取得
    * @param id ユーザーID
@@ -52,6 +43,33 @@ public class UserService {
   public List<Project> showProjectList(long id) {
     User user = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("user not found"));
     return user.getProjects();
+  }
+
+  /**
+   * ユーザーの登録処理
+   * @param user 登録するユーザー情報
+   */
+  public void resistUser(User user){
+    user.setRole("USER");
+    user.setEnabled(false);
+    repository.save(user);
+  }
+
+  /**
+   * ユーザーの登録情報を更新
+   * @param user ユーザー情報
+   */
+  public void updateUser(User user) {
+    repository.save(user);
+  }
+
+  /**
+   * ユーザー情報の削除
+   * @param id ユーザーID（PK）
+   */
+  public void deleteUser(Long id) {
+    User user = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("user not found"));
+    repository.delete(user);
   }
 
   /**

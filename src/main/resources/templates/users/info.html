@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>ユーザー登録情報</title>
+</head>
+<body>
+<h2>ユーザー登録情報</h2>
+<table th:object="${userInfo}">
+  <tr>
+    <th>ログインID</th>
+    <td th:text="*{name}"></td>
+  </tr>
+  <tr>
+    <th>ユーザー名</th>
+    <td th:text="*{loginId}"></td>
+  </tr>
+  <tr>
+    <th>メールアドレス</th>
+    <td th:text="*{email}"></td>
+  </tr>
+</table>
+<a th:href="@{/user/update/{id}(id=${id})}">登録情報の更新</a>
+</body>
+</html>
