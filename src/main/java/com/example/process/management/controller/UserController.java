@@ -25,6 +25,12 @@ public class UserController {
 
   private final UserService service;
 
+  /**
+   * ユーザー情報確認画面
+   * @param id ユーザーID（PK)
+   * @param model 登録されているユーザー情報
+   * @return ユーザー情報確認画面
+   */
   @GetMapping("/info/{id}")
   public String userInfoView(@PathVariable("id") Long id, Model model) {
     User userInfo = service.findById(id).orElseThrow(() -> new IllegalArgumentException("user not found"));
@@ -33,6 +39,12 @@ public class UserController {
     return "users/info";
   }
 
+  /**
+   * ユーザー情報の更新画面
+   * @param id　ユーザーID（PK)
+   * @param model　入力フォームに登録済みの情報をバインド
+   * @return ユーザー情報の更新画面
+   */
   @GetMapping("/update/{id}")
   public String updateUserView(@PathVariable("id") Long id, Model model) {
     User userInfo = service.findById(id).orElseThrow(() -> new IllegalArgumentException("user not found"));
@@ -46,6 +58,15 @@ public class UserController {
     return "/users/update";
   }
 
+  /**
+   * ユーザー情報の更新
+   * @param id ログインしているユーザーのID（PK)
+   * @param form　入力された情報
+   * @param model　エラーメッセージとユーザーID（PK)
+   * @return エラーメッセージかユーザー情報確認画面
+   */
+
+  //TODO 登録確認画面を追加して、最終確認できるようにする
   @PostMapping("/update/{id}")
   public String updateUser(@PathVariable("id") Long id, @ModelAttribute UpdateForm form, Model model) {
 
