@@ -5,8 +5,7 @@
   <title>トップページ</title>
 </head>
 <body>
-トップページ
-<a th:href="@{/user/signup}">新規登録</a>
-<a th:href="@{/login}">ログイン</a>
+<h2>トップページ</h2>
+<a th:href="@{/user/info/{id}(id=${id})}">登録情報の確認</a>
 </body>
 </html>

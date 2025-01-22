@@ -58,7 +58,9 @@ public class LoginController {
       return "users/login";
     } else {
       service.userEnabledTrue(userInfo.get());
-      return "redirect:/home";
+      Long id = userInfo.get().getId();
+      model.addAttribute("id",id);
+      return "redirect:/home/" +id;
     }
   }
 }

@@ -82,7 +82,7 @@ public class UserController {
       model.addAttribute("message","更新が完了しました。");
       model.addAttribute("id",id);
 
-      return "redirect:/user/info/{id}";
+      return "redirect:/user/info" + id;
     }
   }
 }
