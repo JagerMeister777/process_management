@@ -30,8 +30,13 @@ public class UserService {
    * @param id プライマリーキー
    * @return ユーザー情報
    */
-  public Optional<User> findById(Long id){
+  public Optional<User> findById(Long id) {
     return repository.findById(id);
+  }
+
+  public Boolean findByEmail(String email) {
+    Optional<User> user = repository.findByEmail(email);
+    return user.isPresent();
   }
 
 
@@ -40,7 +45,7 @@ public class UserService {
    * @param id ユーザーID
    * @return ユーザーが作成したプロジェクトリスト
    */
-  public List<Project> showProjectList(long id) {
+  public List<Project> projectsList(long id) {
     User user = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("user not found"));
     return user.getProjects();
   }
@@ -49,7 +54,7 @@ public class UserService {
    * ユーザーの登録処理
    * @param user 登録するユーザー情報
    */
-  public void resistUser(User user){
+  public void resistUser(User user) {
     user.setRole("USER");
     user.setEnabled(false);
     repository.save(user);
@@ -76,7 +81,7 @@ public class UserService {
    * ログイン後の有効化
    * @param user ユーザー情報
    */
-  public void userEnabledTrue(User user){
+  public void userEnabledTrue(User user) {
     user.setEnabled(true);
     repository.save(user);
   }

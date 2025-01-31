@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * ユーザー情報のController
@@ -45,7 +46,8 @@ public class LoginController {
    * @return 認証成功でホーム画面に繊維
    */
   @PostMapping
-  public String login(@Valid @ModelAttribute("loginForm") LoginForm form, Model model) {
+  public String login(@Valid @ModelAttribute("loginForm") LoginForm form, Model model,
+      RedirectAttributes redirectAttributes) {
     //ユーザー情報を取得
     var userInfo = service.findByLoginId(form.getLoginId());
 
@@ -59,8 +61,8 @@ public class LoginController {
     } else {
       service.userEnabledTrue(userInfo.get());
       Long id = userInfo.get().getId();
-      model.addAttribute("id",id);
-      return "redirect:/home/" +id;
+      redirectAttributes.addFlashAttribute("userId",id);
+      return "redirect:/home/" + id;
     }
   }
 }

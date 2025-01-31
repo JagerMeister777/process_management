@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プロジェクトの詳細</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:fragment="detail(project)" class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <table>
+        <tr>
+          <th>プロジェクト名</th><td th:text="${project.name}"></td>
+        </tr>
+        <tr>
+          <th>説明</th> <td th:text="${project.description}"></td>
+        </tr>
+        <tr>
+          <th>着工日</th> <td th:text="${project.startProject}"></td>
+        </tr>
+        <tr>
+          <th>竣工日</th> <td th:text="${project.endProject}"></td>
+        </tr>
+        <tr>
+          <th>作成者</th> <td th:text="${project.createdBy.name}"></td>
+        </tr>
+        <tr>
+          <th>関与しているユーザー</th> <td th:each="user : ${project.users}" th:text="${user.name}"></td>
+        </tr>
+      </table>
+      <a th:href="@{/users/{userId}/projects/{projectId}/task/create(userId=${userId},projectId=${project.id})}">タスクの作成</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

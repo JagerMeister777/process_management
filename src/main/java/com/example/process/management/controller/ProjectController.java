@@ -6,8 +6,6 @@ import com.example.process.management.form.ProjectForm;
 import com.example.process.management.service.ProjectService;
 import com.example.process.management.service.UserService;
 import jakarta.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,16 +25,12 @@ public class ProjectController {
   /** ユーザー情報のService */
   private final UserService userService;
 
-  /**
-   * ユーザーの作成したプロジェクトリスト
-   * @param id ユーザーID
-   * @param model ユーザーが作成したプロジェクトリスト（List型）
-   * @return プロジェクトリスト画面
-   */
-  @GetMapping("/project/list/{id}")
-  public String getProjectList(@PathVariable Long id, Model model){
-    model.addAttribute("projectList",userService.showProjectList(id));
-    return "projects/list";
+  @GetMapping("/users/{userId}/projects/{projectId}")
+  public String projectView(@PathVariable("projectId") Long projectId,@PathVariable("userId") Long userId, Model model) {
+    model.addAttribute("userId",userId);
+    model.addAttribute("projectsList",userService.projectsList(userId));
+    model.addAttribute("project",projectService.findByProjectId(projectId));
+    return "home";
   }
 
   /**
@@ -44,20 +38,17 @@ public class ProjectController {
    * @param form 入力フォーム
    * @return プロジェクトの作成画面
    */
-  @GetMapping("/project/create")
-  public String createProjectView(ProjectForm form,Model model) {
-    // TODO 動的にユーザーIDを取得できるようにする
-    int userId = 1;
+  @GetMapping("/projects/{userId}/create")
+  public String createProjectView(@PathVariable ("userId") Long userId, ProjectForm form,Model model) {
     model.addAttribute("id",userId);
     return "projects/create";
   }
 
-  @PostMapping("/{id}/project/create")
+  @PostMapping("/projects/{userId}/create")
   public String createProject(
       @Valid @ModelAttribute("projectForm") ProjectForm form,
-      @PathVariable("id") Long userId,
-      Model model,
-      BindingResult result) {
+      @PathVariable("userId") Long userId,
+      Model model) {
     Project project = new Project();
     project.setName(form.getName());
     project.setDescription(form.getDescription());
@@ -68,6 +59,6 @@ public class ProjectController {
     User userInfo = userService.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
 
     projectService.createProject(project,userInfo);
-    return "redirect:/project/list";
+    return "redirect:/home/" + userId ;
   }
 }

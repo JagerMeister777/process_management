@@ -2,14 +2,14 @@
 <html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml">
 <head th:replace="~{fragments/head :: commonHead(~{::title})}">
   <meta charset="UTF-8">
-  <title>プロジェクト新規作成</title>
+  <title>タスク新規作成</title>
 </head>
 <body>
-<h2>プロジェクト新規作成</h2>
+<h2>タスク新規作成</h2>
 <span th:text="${errorMsg}" style="color: red"></span>
-<form th:action="@{/projects/{userId}/create(userId=${userId})}" th:object="${projectForm}" method="post">
+<form class="" th:action="@{/users/{userId}/projects/{projectId}/task/create(userId=${userId},projectId=${projectId})}" th:object="${taskForm}" method="post">
   <div>
-    <label for="name">プロジェクト名</label>
+    <label for="name">タスク名</label>
     <input id="name" type="text" th:field="*{name}" required>
   </div>
   <div>
@@ -17,12 +17,12 @@
     <textarea id="description" type="text" th:field="*{description}" required></textarea>
   </div>
   <div>
-    <label for="startProject">着工日</label>
-    <input id="startProject" type="datetime-local" th:field="*{startProject}" required>
+    <label for="startDate">開始日</label>
+    <input id="startDate" type="datetime-local" th:field="*{startDate}" required>
   </div>
   <div>
-    <label for="endProject">竣工日</label>
-    <input id="endProject" type="datetime-local" th:field="*{endProject}" required>
+    <label for="endDate">終了日</label>
+    <input id="endDate" type="datetime-local" th:field="*{endDate}" required>
   </div>
   <input type="submit" value="作成">
 </form>

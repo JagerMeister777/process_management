@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml">
-<head>
+<head th:replace="~{fragments/head :: commonHead(~{::title})}">
   <meta charset="UTF-8">
   <title>ユーザー登録情報</title>
 </head>
 <body>
 <h2>ユーザー登録情報</h2>
+<span th:text="${message}"></span>
 <table th:object="${userInfo}">
   <tr>
     <th>ログインID</th>
@@ -20,6 +21,6 @@
     <td th:text="*{email}"></td>
   </tr>
 </table>
-<a th:href="@{/user/update/{id}(id=${id})}">登録情報の更新</a>
+<a th:action="post" th:href="@{/users/{userId}(userId=${userId})}">登録情報の更新</a>
 </body>
 </html>
