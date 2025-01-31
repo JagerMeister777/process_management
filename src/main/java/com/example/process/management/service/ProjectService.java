@@ -5,7 +5,6 @@ import com.example.process.management.entity.User;
 import com.example.process.management.repository.ProjectRepository;
 import com.example.process.management.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,11 +19,19 @@ public class ProjectService {
   /** ユーザー情報のRepository */
   private final UserRepository userRepository;
 
+
+  public Optional<Project> findById(Long id) {
+    return projectRepository.findById(id);
+  }
+
+  public Project findByProjectId(Long id) {
+    return projectRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found project"));
+  }
+
   /**
    * プロジェクトの新規作成
    * @param project フォームから受け取ったプロジェクト情報
    */
-  //TODO これ以降の処理の修正（競合が発生する）projectIdの自動採番をどうにかする
   @Transactional
   public void createProject(Project project, User user) {
     // projectにuserを設定（プロジェクトを作成したユーザーを設定）

@@ -14,7 +14,8 @@ import java.util.List;
  */
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
@@ -28,6 +29,10 @@ public class User {
   @Column(nullable = false, unique = true)
   @NotBlank(message = "ログインIDを入力してください。")
   private String loginId;
+
+  @Column(nullable = true)
+  @NotBlank(message = "名前を入力してください")
+  private String name;
 
   /** パスワード */
   @Column(nullable = false)

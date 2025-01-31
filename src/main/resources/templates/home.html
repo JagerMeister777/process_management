@@ -1,12 +1,83 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml">
-<head>
+<head th:replace="~{fragments/head :: commonHead(~{::title})}">
   <meta charset="UTF-8">
   <title>トップページ</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-トップページ
-<a th:href="@{/user/signup}">新規登録</a>
-<a th:href="@{/login}">ログイン</a>
+<header class="header">
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+</header>
+
+<div style="height: 100vh;" class="container-fluid">
+  <div class="row h-100">
+    <!-- サイドバー -->
+    <div class="col-3 border border-dark sidebar" id="sidebar">
+      <div class="row">
+        <div class="col-11">
+          <div class="row">
+            <div class="col">
+              <div class="d-flex justify-content-between mt-3 mb-3">
+                <h5 class="d-inline mt-2">プロジェクト一覧</h5>
+                <a class="btn btn-primary" th:href="@{/projects/{userId}/create(userId=${userId})}">新規作成</a>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <ul class="list-group" style="max-height: 500px; overflow-y: auto;">
+                <li class="list-group-item" th:each="project : ${projectsList}">
+                  <a th:href="@{/users/{userId}/projects/{projectId}(projectId=${project.id},userId=${userId})}" th:text="${project.name}"></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="row" style="position: absolute; bottom: 0;">
+            <div class="col">
+              <h5 class="mt-3 mb-3">プロジェクトの詳細</h5>
+              <div th:replace="~{projects/detail :: detail(project=${project})}"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-1">
+
+        </div>
+      </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="col-9 border border-dark" id="main-content">
+      <div class="row">
+        <div class="col">
+          <!-- サイドバー表示/非表示ボタン -->
+          <button id="toggleSidebar" class="toggle-btn btn btn-secondary">☰</button>
+          <h2 th:text="${project.name} + 'の工程表'">プロジェクト名の工程表</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- サイドバーを隠したり表示したりするためのスクリプト -->
+<script>
+  document.getElementById('toggleSidebar').addEventListener('click', function() {
+    // サイドバーの表示/非表示をトグルする
+    document.getElementById('sidebar').classList.toggle('d-none');
+
+     // サイドバーが非表示のときにメインコンテンツの幅を100%に
+     if (document.getElementById('sidebar').classList.contains('d-none')) {
+      document.getElementById('main-content').classList.add('col-12');
+      document.getElementById('main-content').classList.remove('col-9');
+     } else {
+      // サイドバーが表示された場合は元に戻す
+      document.getElementById('main-content').classList.remove('col-12');
+      document.getElementById('main-content').classList.add('col-9');
+  }
+  });
+</script>
+
+<!-- Bootstrapのスクリプト -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 </body>
 </html>

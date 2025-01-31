@@ -16,16 +16,6 @@ public class UserService {
   private final UserRepository repository;
 
   /**
-   * ユーザーの登録処理
-   * @param user 登録するユーザー情報
-   */
-  public void resistUser(User user){
-    user.setRole("USER");
-    user.setEnabled(false);
-    repository.save(user);
-  }
-
-  /**
    * ユーザー情報の検索
    * @param loginId ログインID
    * @return DBに登録されているユーザー情報（なければNullを返す）
@@ -40,25 +30,58 @@ public class UserService {
    * @param id プライマリーキー
    * @return ユーザー情報
    */
-  public Optional<User> findById(Long id){
+  public Optional<User> findById(Long id) {
     return repository.findById(id);
   }
+
+  public Boolean findByEmail(String email) {
+    Optional<User> user = repository.findByEmail(email);
+    return user.isPresent();
+  }
+
 
   /**
    * ユーザーが作成したプロジェクトの取得
    * @param id ユーザーID
    * @return ユーザーが作成したプロジェクトリスト
    */
-  public List<Project> showProjectList(long id) {
+  public List<Project> projectsList(long id) {
     User user = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("user not found"));
     return user.getProjects();
+  }
+
+  /**
+   * ユーザーの登録処理
+   * @param user 登録するユーザー情報
+   */
+  public void resistUser(User user) {
+    user.setRole("USER");
+    user.setEnabled(false);
+    repository.save(user);
+  }
+
+  /**
+   * ユーザーの登録情報を更新
+   * @param user ユーザー情報
+   */
+  public void updateUser(User user) {
+    repository.save(user);
+  }
+
+  /**
+   * ユーザー情報の削除
+   * @param id ユーザーID（PK）
+   */
+  public void deleteUser(Long id) {
+    User user = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("user not found"));
+    repository.delete(user);
   }
 
   /**
    * ログイン後の有効化
    * @param user ユーザー情報
    */
-  public void userEnabledTrue(User user){
+  public void userEnabledTrue(User user) {
     user.setEnabled(true);
     repository.save(user);
   }

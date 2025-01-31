@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * ユーザー情報のController
@@ -20,14 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/login")
 public class LoginController {
 
-  /**
-   * ユーザーを管理するService
-   */
+  /** ユーザーを管理するService */
   private final UserService service;
 
-  /**
-   * passwordEncoder
-   */
+  /** passwordEncoder */
   private final PasswordEncoder passwordEncoder;
 
   /**
@@ -41,7 +38,6 @@ public class LoginController {
     return "users/login";
   }
 
-
   /**
    * ログイン処理
    *
@@ -50,19 +46,23 @@ public class LoginController {
    * @return 認証成功でホーム画面に繊維
    */
   @PostMapping
-  public String login(@Valid @ModelAttribute("loginForm") LoginForm form, Model model) {
+  public String login(@Valid @ModelAttribute("loginForm") LoginForm form, Model model,
+      RedirectAttributes redirectAttributes) {
     //ユーザー情報を取得
-    var userInfo = service.findByLoginId(form.getLoginId()).orElseThrow(() -> new IllegalArgumentException("user not found"));
+    var userInfo = service.findByLoginId(form.getLoginId());
 
     //値があり、パスワードが一致するか
-    var isPasswordMatching = passwordEncoder.matches(form.getPassword(), userInfo.getPassword());
+    var isPasswordMatching = userInfo.isPresent() &&
+        passwordEncoder.matches(form.getPassword(), userInfo.get().getPassword());
 
     if (!isPasswordMatching) {
       model.addAttribute("errorMsg", "ログインIDとパスワードの組み合わせが間違っています。");
       return "users/login";
     } else {
-      service.userEnabledTrue(userInfo);
-      return "redirect:/home";
+      service.userEnabledTrue(userInfo.get());
+      Long id = userInfo.get().getId();
+      redirectAttributes.addFlashAttribute("userId",id);
+      return "redirect:/home/" + id;
     }
   }
 }
