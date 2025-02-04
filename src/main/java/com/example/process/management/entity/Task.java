@@ -1,5 +1,6 @@
 package com.example.process.management.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,18 +24,19 @@ public class Task {
   @Column(nullable = true)
   private String description;
 
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   @Column(name = "start_date")
   private LocalDateTime startDate;
 
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   @Column(name = "end_date")
   private LocalDateTime endDate;
 
   @Column(name = "status", nullable = false)
   private String status;
 
-  @ManyToOne()
-  @JoinColumn(name = "project_id", nullable = false)
-  private Project project;
+  @Column(name = "project_id", nullable = false)
+  private Long projectId;
 
   @Column(name = "created_at", updatable = false)
   private LocalDateTime createdAt;

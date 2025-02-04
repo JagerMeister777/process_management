@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="chart(tasks)">
+<head>
+  <meta charset="UTF-8">
+  <title>バーチャート工程表</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+  <style>
+    .chart-container {
+        width: 100%;
+        height: 550px; /* 初期の高さ */
+        overflow-x: auto; /* 横スクロール */
+        overflow-y: auto; /* 縦スクロール */
+        white-space: nowrap;
+        display: block;
+    }
+  </style>
+</head>
+<body>
+<div class="chart-container">
+  <canvas id="barChart"></canvas>
+</div>
+
+<script th:inline="javascript">
+  const tasks = /*[[${tasks}]]*/ [];
+
+  if (tasks.length > 0) {
+      // **タスクの開始日・終了日を取得**
+      const minDate = Math.min(...tasks.map(task => new Date(task.startDate).getTime()));
+      const maxDate = Math.max(...tasks.map(task => new Date(task.endDate).getTime()));
+
+      // **横スクロール可能にするためキャンバスの幅を可変に設定**
+      const daysBetween = (maxDate - minDate) / (1000 * 60 * 60 * 24);
+      const canvasWidth = Math.max(daysBetween * 5, window.innerWidth); // 1日5px
+
+      document.addEventListener("DOMContentLoaded", function () {
+          const canvas = document.getElementById("barChart");
+
+          // **タスクの数に応じて高さを設定**
+          const taskHeight = 20; // 1タスクあたりの高さ
+          canvas.width = canvasWidth;
+          canvas.height = Math.max(tasks.length * taskHeight, 400);
+
+          const ctx = canvas.getContext("2d");
+
+          const formattedTasks = tasks.map((task, index) => ({
+              x: [new Date(task.startDate).getTime(), new Date(task.endDate).getTime()],
+              y: task.name,
+              width: new Date(task.endDate).getTime() - new Date(task.startDate).getTime() // バーの幅（終了日 - 開始日）
+          }));
+
+          new Chart(ctx, {
+              type: "bar",
+              data: {
+                  datasets: [{
+                      label: "日程",
+                      data: formattedTasks,
+                      backgroundColor: "rgba(54, 162, 235, 0.5)",
+                      borderColor: "rgba(54, 162, 235, 1)",
+                      borderWidth: 2,
+                      borderSkipped: 'none',
+                      barPercentage: 0.5,
+                      categoryPercentage: 0.5
+                  }]
+              },
+              options: {
+                  indexAxis: 'y',
+                  responsive: false,
+                  maintainAspectRatio: false,
+                  scales: {
+                      x: {
+                          type: "time",
+                          time: { unit: "day" },
+                          title: { display: true },
+                          min: minDate,
+                          max: maxDate,
+                      },
+                      y: {
+                          title: { display: true },
+                          ticks: {
+                              autoSkip: false
+                          }
+                      }
+                  },
+                  plugins: {
+                      legend: { display: false },
+                       tooltip: {
+                          enabled: true, // ツールチップを表示
+                          position: 'average', // ツールチップの位置を平均位置に設定
+                          callbacks: {
+                              label: function(tooltipItem) {
+                                  const task = tasks[tooltipItem.dataIndex]; // タスクのデータを取得
+                                  const startDate = luxon.DateTime.fromMillis(new Date(task.startDate).getTime()).toFormat('yyyy/MM/dd');
+                                  const endDate = luxon.DateTime.fromMillis(new Date(task.endDate).getTime()).toFormat('yyyy/MM/dd');
+                                  return `${task.description}: ${startDate} - ${endDate}`; // タスク名と開始日・終了日を表示
+                              }
+                          },
+                          yAlign: 'center',
+                          padding: 10, // ツールチップの周囲の余白を設定
+                          caretSize: 5, // ツールチップの矢印のサイズ
+                          caretPadding: 10 // ツールチップの矢印のパディング
+                      }
+                  }
+              }
+          });
+      });
+  }
+</script>
+</body>
+</html>

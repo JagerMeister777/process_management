@@ -4,16 +4,17 @@ import com.example.process.management.entity.Project;
 import com.example.process.management.entity.User;
 import com.example.process.management.form.ProjectForm;
 import com.example.process.management.service.ProjectService;
+import com.example.process.management.service.TaskService;
 import com.example.process.management.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,11 +26,14 @@ public class ProjectController {
   /** ユーザー情報のService */
   private final UserService userService;
 
+  private final TaskService taskService;
+
   @GetMapping("/users/{userId}/projects/{projectId}")
   public String projectView(@PathVariable("projectId") Long projectId,@PathVariable("userId") Long userId, Model model) {
     model.addAttribute("userId",userId);
     model.addAttribute("projectsList",userService.projectsList(userId));
     model.addAttribute("project",projectService.findByProjectId(projectId));
+    model.addAttribute("taskList",taskService.getTaskList(projectId));
     return "home";
   }
 
@@ -48,7 +52,8 @@ public class ProjectController {
   public String createProject(
       @Valid @ModelAttribute("projectForm") ProjectForm form,
       @PathVariable("userId") Long userId,
-      Model model) {
+      Model model, RedirectAttributes redirectAttributes) {
+    //プロジェクト情報をProjectクラスにバインド
     Project project = new Project();
     project.setName(form.getName());
     project.setDescription(form.getDescription());
@@ -57,8 +62,8 @@ public class ProjectController {
 
     //ユーザー情報を取得
     User userInfo = userService.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
-
     projectService.createProject(project,userInfo);
+    redirectAttributes.addFlashAttribute("message","プロジェクトを作成しました。");
     return "redirect:/home/" + userId ;
   }
 }
