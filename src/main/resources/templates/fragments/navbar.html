@@ -28,6 +28,9 @@
             <a class="nav-link" th:href="@{/users/{userId}/info(userId=${userId})}">登録情報の確認</a>
           </li>
         </ul>
+        <div th:if="${not #strings.isEmpty(message)}" class="alert alert-success m-3">
+          <span th:text="${message}"></span>
+        </div>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
             <a class="nav-link" th:href="@{/login}">ログアウト</a>

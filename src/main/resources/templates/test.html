@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Konva Sample</title>
+  <script src="https://cdn.jsdelivr.net/npm/konva@8.0.0/konva.min.js"></script>
+</head>
+<body>
+<div id="container"></div>
+<script>
+  // ステージの作成
+  const stage = new Konva.Stage({
+    container: 'container',
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  // レイヤーの作成
+  const layer = new Konva.Layer();
+  stage.add(layer);
+
+  // 四角形の作成
+  const rect = new Konva.Rect({
+    x: 100,
+    y: 100,
+    width: 150,
+    height: 100,
+    fill: 'blue',
+    stroke: 'black',
+    strokeWidth: 2
+  });
+
+  // 四角形をレイヤーに追加
+  layer.add(rect);
+
+  // クリックイベント
+  rect.on('click', function () {
+    alert('Rectangle clicked!');
+  });
+
+  // ドラッグ可能にする
+  rect.draggable(true);
+
+  // 描画を更新
+  layer.batchDraw();
+</script>
+</body>
+</html>

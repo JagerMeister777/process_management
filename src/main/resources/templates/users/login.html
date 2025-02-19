@@ -18,7 +18,8 @@
           <label class="me-2 form-label">パスワード</label>
           <input class="form-control" type="password" th:field="*{password}" required>
         </div>
-        <span th:if="${errorMsg != null}" th:text="${errorMsg}" class="m-3 p-3 d-block text-white bg-danger border border-danger rounded-3"></span>
+        <span th:if="${not #strings.isEmpty(errorMsg)}" th:text="${errorMsg}"
+              class="m-3 p-3 d-block text-white bg-danger border border-danger rounded-3"></span>
         <div class="d-flex justify-content-center mt-5 mb-3">
           <button class="btn btn-primary w-75 w-md-50" type="submit">ログイン</button>
         </div>

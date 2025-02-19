@@ -43,7 +43,7 @@ public class TaskController {
     if(existedProject.isPresent()) {
       taskService.createTask(form,projectId);
       redirectAttributes.addFlashAttribute("message","タスクを作成しました。");
-      return "redirect:/home/" + userId ;
+      return "redirect:/users/" + userId + "/projects/" + projectId;
     }else{
       model.addAttribute("errorMsg","プロジェクトが見つかりませんでした。");
       return "tasks/create";

@@ -30,7 +30,6 @@
           <th>関与しているユーザー</th> <td th:each="user : ${project.users}" th:text="${user.name}"></td>
         </tr>
       </table>
-      <a th:href="@{/users/{userId}/projects/{projectId}/task/create(userId=${userId},projectId=${project.id})}">タスクの作成</a>
     </div>
   </div>
 </div>
