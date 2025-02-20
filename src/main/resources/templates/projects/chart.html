@@ -2,20 +2,54 @@
 <html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="chart(tasks)">
 <head>
   <meta charset="UTF-8">
-  <title>バーチャート工程表 (Konva.js)</title>
+  <title>Excelライクなバーチャート工程表</title>
   <script src="https://cdn.jsdelivr.net/npm/konva@8.0.0/konva.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
   <style>
+    /* チャートを表示するコンテナのスタイル */
     .chart-container {
         width: 100%;
-        height: 550px;
+        height: 100vh; /* 高さを画面全体に */
         overflow: hidden;
         display: block;
         border: 1px solid #ccc;
     }
-    .axis-text {
-        font-size: 12px;
-        fill: black;
+
+    /* モーダルウィンドウのスタイル */
+    .modal {
+        display: none; /* 初期状態では非表示 */
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        padding-top: 60px;
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        text-align: left;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
     }
   </style>
 </head>
@@ -24,155 +58,209 @@
   <div id="container"></div>
 </div>
 
+<!-- モーダルウィンドウのHTML -->
+<div id="taskModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>タスク詳細</h2>
+    <p id="taskName"></p>
+    <p id="taskDescription"></p>
+  </div>
+</div>
+
 <script th:inline="javascript">
-  const tasks = /*[[${tasks}]]*/ [];
+  const tasks = /*[[${tasks}]]*/ []; // タスク情報（Thymeleafで渡されたデータ）
   console.log(tasks);
+
+  // プロジェクトの開始日と終了日を取得
   const projectStartDate = new Date(/*[[${project.startProject}]]*/).getTime();
   const projectEndDate = new Date(/*[[${project.EndProject}]]*/).getTime();
 
+  // タスクが存在する場合
   if (tasks.length > 0) {
-      const minDate = Math.min(...tasks.map(task => new Date(task.startDate).getTime()));
-      const maxDate = Math.max(...tasks.map(task => new Date(task.endDate).getTime()));
-      const daysBetween = (maxDate - minDate) / (1000 * 60 * 60 * 24);
+      const minDate = projectStartDate;  // プロジェクトの開始日
+      const maxDate = projectEndDate;    // プロジェクトの終了日
+      const dateCount = (maxDate - minDate) / (1000 * 60 * 60 * 24); // 日数を計算
 
-      const taskHeight = 40;
-      const taskMargin = 10;
-      const dayScale = 100;
-      const projectDuration = projectEndDate - projectStartDate;
+      let dayScale = 50; // 1日あたりのセル幅
+      const taskHeight = 40; // タスクの高さ
+      const taskMargin = 5;  // タスク間のマージン
+      const headerHeight = 40; // ヘッダーの高さ
+      const rowHeight = taskHeight + taskMargin; // 行の高さ
+
+      // モーダルの要素を取得
+      const modal = document.getElementById("taskModal");
+      const closeBtn = document.getElementsByClassName("close")[0];
+      const taskNameElem = document.getElementById("taskName");
+      const taskDescriptionElem = document.getElementById("taskDescription");
 
       document.addEventListener("DOMContentLoaded", function () {
+          // Konvaのステージ設定
           const stage = new Konva.Stage({
               container: 'container',
               width: window.innerWidth,
-              height: 550
+              height: window.innerHeight
           });
 
           const layer = new Konva.Layer();
           stage.add(layer);
 
-          const dateCount = (maxDate - minDate) / (1000 * 60 * 60 * 24);
-          for (let i = 0; i <= dateCount; i++) {
-              const x = (i * 100) + 50;
-              const text = new Konva.Text({
-                  x: x,
-                  y: 20,
-                  text: new Date(minDate + (i * (1000 * 60 * 60 * 24))).toLocaleDateString(),
-                  fontSize: 10,
-                  fontFamily: 'Arial',
-                  fill: 'black',
-                  offsetX: 10,
-                  offsetY: 10,
-              });
-              layer.add(text);
-          }
+          function drawGrid() {
+              // グリッドを再描画
+              layer.destroyChildren();
 
-          tasks.forEach((task, index) => {
-              const y = (index * (taskHeight + taskMargin));
-              const text = new Konva.Text({
-                  x: 0,
-                  y: y + (taskHeight / 2) - 5 + 50,
-                  text: task.name,
-                  fontSize: 12,
-                  fontFamily: 'Arial',
-                  fill: 'black',
-              });
-              layer.add(text);
-          });
+              // 日付ヘッダーを描画
+              for (let i = 0; i <= dateCount; i++) {
+                  const x = (i * dayScale) + 100;
+                  const dateText = new Date(minDate + (i * (1000 * 60 * 60 * 24))).toLocaleDateString();
 
-          const yOffset = 50;
+                  // 列ヘッダーの日付テキストを描画
+                  const text = new Konva.Text({
+                      x: x + dayScale / 2,
+                      y: 10,
+                      text: dateText,
+                      fontSize: 12,
+                      fontFamily: 'Arial',
+                      fill: 'black',
+                      align: 'center'
+                  });
+                  text.offsetX(text.width() / 2);
 
-          tasks.forEach((task, index) => {
-              const taskStartDate = new Date(task.startDate);
-              const taskEndDate = new Date(task.endDate);
-              const taskStartX = (taskStartDate - projectStartDate) / projectDuration * dayScale;
-              const taskWidth = (taskEndDate - taskStartDate) / projectDuration * dayScale;
+                  layer.add(text);
 
-              const rect = new Konva.Rect({
-                  x: taskStartX,
-                  y: index * (taskHeight + taskMargin) + yOffset,
-                  width: taskWidth,
-                  height: taskHeight - 5,
-                  fill: 'rgba(54, 162, 235, 0.5)',
-                  stroke: 'rgba(54, 162, 235, 1)',
-                  strokeWidth: 2,
-                  cornerRadius: 5
-              });
+                  const endX = (maxDate - minDate) / (1000 * 60 * 60 * 24) * dayScale + 100;
 
-              const text = new Konva.Text({
-                  x: taskStartX,
-                  y: index * (taskHeight + taskMargin) + (taskHeight - 20) / 2 + yOffset,
-                  text: task.name,
-                  fontSize: 12,
+                  // 横グリッド線を描画
+                  const line = new Konva.Line({
+                      points: [100, headerHeight + i * rowHeight, endX, headerHeight + i * rowHeight],
+                      stroke: '#ddd',
+                      strokeWidth: 1
+                  });
+
+                  layer.add(line);
+              }
+
+              // 縦グリッド線を描画
+              for (let i = 0; i <= dateCount; i++) {
+                  const x = (i * dayScale) + 100;
+
+                  const line = new Konva.Line({
+                      points: [x, headerHeight, x, window.innerHeight],
+                      stroke: '#ddd',
+                      strokeWidth: 1
+                  });
+
+                  layer.add(line);
+              }
+
+              // タスクリストのヘッダーを描画
+              const taskHeaderText = new Konva.Text({
+                  x: 10,
+                  y: 10,
+                  text: "タスク名",
+                  fontSize: 14,
                   fontFamily: 'Arial',
                   fill: 'black'
               });
 
-              layer.add(rect);
-              layer.add(text);
-          });
+              layer.add(taskHeaderText);
 
-          layer.batchDraw();
+              // 各タスクの描画
+              tasks.forEach((task, index) => {
+                  const y = headerHeight + index * rowHeight;
 
-          // **ズームイン・ズームアウト**
-          stage.on('wheel', (e) => {
-              e.evt.preventDefault();
+                  // タスク名セルを描画
+                  const taskNameText = new Konva.Text({
+                      x: 10,
+                      y: y + (rowHeight / 2) - 7,
+                      text: task.name,
+                      fontSize: 12,
+                      fontFamily: 'Arial',
+                      fill: 'black'
+                  });
 
-              const scaleBy = 1.1;
-              const oldScale = stage.scaleX();
-              const mousePoint = stage.getPointerPosition();
-              const newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
-              const stageX = stage.x();
-              const stageY = stage.y();
-              const newX = mousePoint.x - (mousePoint.x - stageX) * (newScale / oldScale);
-              const newY = mousePoint.y - (mousePoint.y - stageY) * (newScale / oldScale);
+                  layer.add(taskNameText);
 
-              stage.scale({ x: newScale, y: newScale });
-              stage.position({ x: newX, y: newY });
+                  // タスクバーを描画
+                  const taskStartX = (new Date(task.startDate) - minDate) / (1000 * 60 * 60 * 24) * dayScale + 100;
+                  const taskWidth = (new Date(task.endDate) - new Date(task.startDate)) / (1000 * 60 * 60 * 24) * dayScale;
+
+                  const taskBar = new Konva.Rect({
+                      x: taskStartX,
+                      y: y + 5,
+                      width: taskWidth,
+                      height: taskHeight - 10,
+                      fill: 'rgba(54, 162, 235, 0.7)',
+                      stroke: 'rgba(54, 162, 235, 1)',
+                      strokeWidth: 1,
+                      cornerRadius: 3
+                  });
+
+                  // タスクバーをクリックした時にモーダルを表示
+                  taskBar.on('click', function () {
+                      taskNameElem.textContent = "タスク名: " + task.name;
+                      taskDescriptionElem.textContent = "詳細: " + task.description;
+
+                      // モーダルを表示
+                      modal.style.display = "block";
+                  });
+
+                  // タスクバー内にタスク名を表示
+                  const taskNameOnBar = new Konva.Text({
+                      x: taskStartX + taskWidth / 2,
+                      y: y + 5 + (taskHeight - 10) / 2 - 7,
+                      text: task.name,
+                      fontSize: 12,
+                      fontFamily: 'Arial',
+                      fill: 'white',
+                      align: 'center'
+                  });
+                  taskNameOnBar.offsetX(taskNameOnBar.width() / 2);
+
+                  layer.add(taskBar);
+                  layer.add(taskNameOnBar);
+              });
 
               layer.batchDraw();
-          });
+          }
 
-          // **左クリックのドラッグで移動**
-          let isDragging = false;
-          let lastPos = { x: 0, y: 0 };
+          drawGrid();
 
-          stage.on('mousedown', (e) => {
-              if (e.evt.button === 0) { // 左クリックのみ
-                  isDragging = true;
-                  lastPos = stage.getPointerPosition();
+          // モーダルを閉じる
+          closeBtn.onclick = function () {
+              modal.style.display = "none";
+          }
+
+          // モーダル外をクリックしたら閉じる
+          window.onclick = function (event) {
+              if (event.target === modal) {
+                  modal.style.display = "none";
+              }
+          }
+
+          // ズーム機能
+          stage.on('wheel', (e) => {
+              e.evt.preventDefault();
+              const scaleBy = 1.1;
+              const oldScale = dayScale;
+              const mousePoint = stage.getPointerPosition();
+              const mouseX = mousePoint.x;
+              const mouseY = mousePoint.y;
+              const newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+              if (newScale >= 30 && newScale <= 150) {
+                  dayScale = newScale;
+                  drawGrid();
               }
           });
 
-          stage.on('mousemove', (e) => {
-              if (!isDragging) return;
-
-              const mousePos = stage.getPointerPosition();
-              const dx = mousePos.x - lastPos.x;
-              const dy = mousePos.y - lastPos.y;
-
-              stage.x(stage.x() + dx);
-              stage.y(stage.y() + dy);
-              lastPos = mousePos;
+          // チャート全体をドラッグできるようにする
+          stage.draggable(true);
+          stage.on('dragmove', function (e) {
+              // ここでステージの移動時に何か操作を加えたければ追加可能
           });
-
-          stage.on('mouseup', () => {
-              isDragging = false;
-          });
-
-          stage.on('mouseleave', () => {
-              isDragging = false;
-          });
-
-          // **ウィンドウリサイズ対応**
-          window.addEventListener('resize', function () {
-              stage.width(window.innerWidth);
-              stage.height(window.innerHeight);
-          });
-
-          stage.add(layer);
       });
   }
 </script>
-
 </body>
 </html>
